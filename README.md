@@ -1,3 +1,5 @@
+## To start
+Run ``
 ## Update status
 
 Possible statuses:
@@ -28,3 +30,10 @@ Content-Type: application/json
   "message": "Hello from integration"
 }
 ```
+
+## Links
+- [To read](https://blog.teemo.co/vertx-in-production-d5ca9e89d7c6)
+- [Interceptor test](https://github.com/vert-x3/vertx-web/blob/master/vertx-web-client/src/test/java/io/vertx/ext/web/client/InterceptorTest.java)
+- [config](https://vertx.io/docs/vertx-config/java/)
+- [vertx rest](https://vertx.io/blog/some-rest-with-vert-x/)
+- [vextx web](https://vertx.io/docs/vertx-web/java/) and [examples](https://github.com/vert-x3/vertx-web/blob/master/vertx-web/src/main/java/examples/WebExamples.java)
