@@ -1,6 +1,5 @@
 package com.pkb;
 
-
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
@@ -8,34 +7,9 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.client.WebClient;
-import io.vertx.ext.web.handler.BodyHandler;
 
-import java.util.Base64;
-import java.util.function.Supplier;
-
-import static io.vertx.core.logging.LoggerFactory.getLogger;
-import static java.lang.String.format;
-import static java.lang.invoke.MethodHandles.lookup;
-
-public class FdVerticle extends AbstractVerticle {
-    private static final Logger LOGGER = getLogger(lookup().lookupClass());
-
-    private class AuthProvider implements Supplier<String> {
-        private final String key;
-
-        private AuthProvider(String key) {
-            this.key = key;
-        }
-
-        @Override
-        public String get() {
-            return Base64.getEncoder().encodeToString(format("%s:X", key).getBytes());
-        }
-    }
-
+public class FdIntegrationVerticle extends AbstractVerticle {
     @Override
     public void start(Future<Void> startedResult) throws Exception {
         super.start(startedResult);
@@ -63,7 +37,6 @@ public class FdVerticle extends AbstractVerticle {
                                         startup.failed();
                                     }
                                 });
-
                     } else {
                         startedResult.failed();
                     }
@@ -71,18 +44,11 @@ public class FdVerticle extends AbstractVerticle {
     }
 
     private Router api(JsonObject config) {
-        WebClient httpClient = WebClient.create(vertx);
-        Supplier<String> authProvider = new AuthProvider(config.getString("token"));
-        String baseUrl = config.getString("baseUrl");
+        FdService fdService = new FdService(vertx, config);
 
-        Router api = Router.router(vertx);
-        api.route()
-                .produces("application/json")
-                .handler(BodyHandler.create());
-
-        api.put("/message/:ticketId").handler(new SendMessageHandler(httpClient, authProvider, baseUrl));
-        api.post("/status/:ticketId/:status").handler(new TicketStatusHandler(httpClient, authProvider, baseUrl));
-
-        return api;
+        return new Api(vertx)
+                .register(new SendMessageService(fdService))
+                .register(new StatusChangeService(fdService))
+                .router();
     }
 }
