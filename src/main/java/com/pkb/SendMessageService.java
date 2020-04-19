@@ -46,7 +46,7 @@ public class SendMessageService implements ApiService {
 
     @Override
     public Router register(Router api) {
-        api.put(format("/message/:%s", TICKET_ID))
+        api.post(format("/message/:%s", TICKET_ID))
                 .handler(VALIDATION_HANDLER)
                 .handler(new SendMessageHandler());
         return api;

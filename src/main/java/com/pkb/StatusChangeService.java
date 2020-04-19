@@ -34,7 +34,7 @@ public class StatusChangeService implements ApiService {
 
     @Override
     public Router register(Router api) {
-        api.post(format("/status/:%s/:%s", TICKET_ID, STATUS))
+        api.put(format("/status/:%s/:%s", TICKET_ID, STATUS))
                 .handler(VALIDATION_HANDLER)
                 .handler(new StatusChangeHandler());
         return api;
