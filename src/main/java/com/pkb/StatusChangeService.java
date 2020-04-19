@@ -49,18 +49,19 @@ public class StatusChangeService implements ApiService {
 
             fdService.changeStatus(ticketId, status)
                     .onComplete($ -> {
-                        int updatedStatusCode = $.result().getInteger("status");
+                        if ($.succeeded()) {
+                            int updatedStatusCode = $.result().getInteger("status");
 
-                        context.response()
-                                .end(new JsonObject()
-                                        .put("status", "ok")
-                                        .put("current_fd_ticket_status", Status.fromCode(updatedStatusCode))
-                                        .toString());
-                    })
-                    .onFailure(cause -> {
-                        LOGGER.error(cause);
-                        context.response().setStatusCode(500)
-                                .end(new JsonObject().put("status", "failed").toString());
+                            context.response()
+                                    .end(new JsonObject()
+                                            .put("status", "ok")
+                                            .put("current_fd_ticket_status", Status.fromCode(updatedStatusCode))
+                                            .toString());
+                        } else {
+                            LOGGER.error($.cause());
+                            context.response().setStatusCode(500)
+                                    .end(new JsonObject().put("status", "failed").toString());
+                        }
                     });
         }
     }

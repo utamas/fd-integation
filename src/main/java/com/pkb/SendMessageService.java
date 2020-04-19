@@ -80,12 +80,15 @@ public class SendMessageService implements ApiService {
             Payload payload = Json.decodeValue(context.getBodyAsString(), Payload.class);
 
             fdService.sendMessage(ticketId, payload.message)
-                    .onComplete($ -> context.response()
-                            .end(new JsonObject().put("status", "ok").toString()))
-                    .onFailure(cause -> {
-                        LOGGER.error(cause);
-                        context.response().setStatusCode(500)
-                                .end(new JsonObject().put("status", "failed").toString());
+                    .onComplete($ -> {
+                        if ($.succeeded()) {
+                            context.response()
+                                    .end(new JsonObject().put("status", "ok").toString());
+                        } else {
+                            LOGGER.error($.cause());
+                            context.response().setStatusCode(500)
+                                    .end(new JsonObject().put("status", "failed").toString());
+                        }
                     });
         }
     }

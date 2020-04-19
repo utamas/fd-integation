@@ -39,10 +39,15 @@ public class FdService {
                 .putHeader("Authorization", token)
                 .putHeader("Content-Type", "application/json")
                 .sendJsonObject(payload, fdResponse -> {
-                    if (fdResponse.succeeded()) {
-                        promise.complete(fdResponse.result().bodyAsJsonObject());
-                    } else {
-                        promise.fail(fdResponse.cause());
+                    try {
+                        if (fdResponse.succeeded()) {
+                            JsonObject result = fdResponse.result().bodyAsJsonObject();
+                            promise.complete(result);
+                        } else {
+                            promise.fail(fdResponse.cause());
+                        }
+                    } catch (Exception cause) {
+                        promise.fail(cause);
                     }
                 });
         return promise.future();

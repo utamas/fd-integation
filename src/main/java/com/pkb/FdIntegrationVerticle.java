@@ -7,9 +7,15 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
 import io.vertx.ext.web.Router;
 
+import static io.vertx.core.logging.LoggerFactory.getLogger;
+import static java.lang.invoke.MethodHandles.lookup;
+
 public class FdIntegrationVerticle extends AbstractVerticle {
+    private static final Logger LOGGER = getLogger(lookup().lookupClass());
+
     @Override
     public void start(Future<Void> startedResult) throws Exception {
         super.start(startedResult);
@@ -32,6 +38,7 @@ public class FdIntegrationVerticle extends AbstractVerticle {
                         server.requestHandler(router)
                                 .listen(8080, startup -> {
                                     if (startup.succeeded()) {
+                                        LOGGER.info("Started");
                                         startedResult.succeeded();
                                     } else {
                                         startup.failed();
