@@ -25,6 +25,8 @@ public class FdIntegrationVerticle extends AbstractVerticle {
                 .setOptional(false)
                 .setConfig(new JsonObject().put("path", "/home/utamas/projects/pkb/sandbox/fd-integration/fd.json"));
 
+        vertx.exceptionHandler(cause -> LOGGER.error("Global exception handler", cause));
+
         ConfigRetriever.create(vertx, new ConfigRetrieverOptions().addStore(fileStore))
                 .getConfig(configLoading -> {
                     if (configLoading.succeeded()) {
@@ -54,7 +56,7 @@ public class FdIntegrationVerticle extends AbstractVerticle {
     private Router api(JsonObject config) {
         FdService fdService = new FdService(vertx, config);
 
-        return new Api(vertx)
+        return new Api(vertx, fdService)
                 .register(new SendMessageService(fdService))
                 .register(new StatusChangeService(fdService))
                 .router();
