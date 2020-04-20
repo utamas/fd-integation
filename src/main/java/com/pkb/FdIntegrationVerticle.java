@@ -36,11 +36,12 @@ public class FdIntegrationVerticle extends AbstractVerticle {
 
                         HttpServer server = vertx.createHttpServer();
                         server.requestHandler(router)
-                                .listen(8080, startup -> {
+                                .listen(8082, startup -> {
                                     if (startup.succeeded()) {
                                         LOGGER.info("Started");
                                         startedResult.succeeded();
                                     } else {
+                                        LOGGER.error("Failed");
                                         startup.failed();
                                     }
                                 });
